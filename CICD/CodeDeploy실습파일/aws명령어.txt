@@ -1,0 +1,2 @@
+aws deploy create-application --application-name mywebapp
+aws deploy push --application-name mywebapp --s3-location s3://aws-learner-code-deploy-bucket/webapp.zip --ignore-hidden-files

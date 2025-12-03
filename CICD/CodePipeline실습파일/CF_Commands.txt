@@ -1,0 +1,15 @@
+1) CloudFormation으로 S3버켓 만들기
+
+aws cloudformation create-stack --stack-name CodeDeployDemoStack \
+--template-url http://s3-us-east-1.amazonaws.com/aws-learner-code-pipeline-practice/CF_Template.json \
+--parameters ParameterKey=InstanceCount,ParameterValue=1 \
+ParameterKey=InstanceType,ParameterValue=t2.micro \
+ParameterKey=KeyPairName,ParameterValue= \
+ParameterKey=OperatingSystem,ParameterValue=Linux \
+ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 \
+ParameterKey=TagKey,ParameterValue=Name \
+ParameterKey=TagValue,ParameterValue=CodeDeployDemo \
+--capabilities CAPABILITY_IAM
+
+2) CloudFormation 현재 상태 확인하기
+aws cloudformation describe-stacks --stack-name CodeDeployDemoStack --query "Stacks[0].StackStatus" --output text
