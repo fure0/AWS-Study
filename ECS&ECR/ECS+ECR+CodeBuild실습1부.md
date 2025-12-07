@@ -1,0 +1,132 @@
+## Docker 설치
+- 홈페이지에서 다운로드
+- 터미널에서 다음 입력으로 설치 확인
+  - docker --version
+
+## IAM > 사용자
+- 사용자 추가
+  - 사용자 이름 : ccuser
+  - 엑세스 유형 : 프로그래밍 방식 액세스
+  - 권한 설정 : 기존 정책 직접 연결
+    - 필터 검색 : codeCommit
+    - AWSCodeCommitFullAccess 선택
+  - 유저 생성
+  - 엑세스 키 복사
+  - 터미널에서 aws configure
+    - AWS Access Key ID 입력
+    - AWS Secret Access Key 입력
+    - 지역 : ap-northeast-2 
+    - 아웃풋 : 디폴트
+    - more ~/.aws/config 입력
+      - 지역 확인 가능
+    - more ~/.aws/credentials
+      - 키 확인 가능
+
+## AWS CodeCommit
+- 리포지터리 > 리포지토리 생성
+  - 리포지토리 이름 : aws-learner-docker-source-repo
+  - 생성
+- 터미널에서
+  - https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-ssh-unixes.html 참조
+  - ssh-keygen
+  - Enter file in which to save the key
+    - /user/kimx3129/.ssh/codecommit_rsa
+  - Enter Passphrase
+    - 엔터로 스킵
+  - 그러면 성공적으로 만들어짐
+  - more /User/kimx3129/.ssh/codecommit_rsa.pub
+    - 안에 값 복사
+- IAM에서 ccuser선택 > 보안 자격 증명 탭
+  - AWS CodeCommit에 대한 SSH 키
+    - SSH 퍼블릭 키 업로드
+    - /User/kimx3129/.ssh/codecommit_rsa.pub 값 붙여넣기
+- 터미널에서
+  - vi /Users/kimx3129/.ssh/
+    - 내용에서 User 부분을 지우고 IAM에서 SSH 퍼블릭 키 업로드 한다음에 생성된 SSH 키 ID를 넣어준다
+    - 저장
+  - chmod 600 /User/kimx3129/.ssh/config
+  - ssh git-codecommit.ap-northeast-2.amazonaws.com
+    - yes no 는 yes 선택
+- codecommit 에서
+  - 리포지터리 > 리포지토리 생성
+  - 생성된 리포지토리에서 URL 복제 > SSH 복제
+- 터미널에서
+  - git clone 복사한 값 붙여넣기
+  - ls 로 확인해보기
+    - aws-learner-docker-source-repo
+  - 파일 복사
+    - cp Dockerfile aws-learner-docker-source-repo
+    - cp buildspec.yml aws-learner-docker-source-repo
+  - git add .
+  - git commit -m "update dockerfile and buildspec"
+  - git push
+- CodeCommit 에서
+  - 리포지토리 확인
+  - 업로드된 파일 확인
+
+## ECS애서
+- 클러스터 생성
+  - EC2 Linux + 네트워킹 선택
+  - 클러스터 이름 : aws-learner-ecs-cluster
+  - AWS Fargate가 아니라 Amazon EC2 인스턴스 선택
+  - 인스턴스 구성 : 온디맨드
+  - 컨테이너 인스턴스 : Amazon Linux 2 (kernel 5.10)
+  - EC2 인스턴스 유형 : t2.micro (비싼게 필요없음, 무료)
+  - 인스턴스 개수 : 1개
+  - EC2 AMI ID : 자동선택
+  - 루트 EBS 볼륨 크기(GiB) : 30
+  - 키 페어 : 없음
+  - 나머지는 디폴트로 생성
+
+## ECR에서
+- 리포지토리 생성
+  - 표시 여부 생성 : 프라이빗
+  - 리포지토리 이름 : aws-learner-ecr-repo
+  - 생성
+- 생성한 리포지토리 선택
+  - 푸시 명령 보기 1. 복사 (aws ecr get-login-password 어쩌구)
+- 터미널에서 실행
+  - 권한 없음 에러
+- IAM에서 ccuser 선택
+  - 권한 부여 > 기존 정책 직접 연결
+  - registry 필터 검색
+  - AmazonEC2ContainerRegistryFullAccess 선택
+  - 권한 추가
+- 터미널에서 실행
+  - 로그인 성공
+  - 푸시 명령 보기 2. 복사 (dccker build -t aws-learner-ecr-repo .)
+  - 터미널에서 실행, 이미지 생성 확인
+  - 푸시 명령 보기 3. 복사 (dccker tag aws- 어쩌구)
+  - 터미널에서 실행, 태그 생성
+  - 푸시 명령 보기 4. 복사 (dccker push 어쩌구)
+  - 터미널에서 실행
+  - ECR > images 확인
+    - latest 확인 가능
+## ECS에서
+- 작업(태스크)정의 > 새 작업정의 생성
+  - EC2 선택
+  - 작업 정의 이름 : aws-learner-ecs-task-def
+  - 작업 크기
+    - 작업 메모리 (MiB) : 512
+    - 작업 CPU(단위) : 512
+  - 컨테이너 정의
+    - 컨테이너 추가
+    - 컨테이너 이름 : aws-learner-container
+    - 이미지
+      - ECR > 리포지토리 > aws-learner-ecr-repo 에서 이미지 URI 복사 붙여넣기
+    - 포트 매핑
+      - 호스트 포트 : 80
+      - 컨테이너 포트 : 80
+      - 프로토콜 : tcp
+  - 추가 버튼 선택
+  - 생성
+- 작업정의 > aws-learner-ecs-task-def:1 > 작업 풀다운 선택 > 서비스 생성
+  - 시작 유형 :EC2
+  - 서비스 이름 : aws-learner-ecs-service
+  - 작업 개수 : 1
+- 다음
+- 다음
+- 서비스 생성
+- EC2 > 인스턴스 > 생성된것
+  - 퍼블릭 IPv4주소 인터넷에서 실행해보기
+  - 화면 뜨면 성공

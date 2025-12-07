@@ -1,0 +1,35 @@
+## 터미널에서
+- ls
+  - dockerfile buildsepc.yml
+- git add buildspec.yml
+- git commit -m "update buildspec file"
+- git push
+
+## AWS CodeCommit 에서
+- 리포지토리 > aws-learner-docker-source-repo
+  - buildspec.yml 변경된것 확인
+- 빌드 > 프로젝트 빌드 > 프로젝트 생성
+  - 프로젝트 이름 : aws_learner_cb_proj
+  - 소스 공급자 : AWS CodeCommit
+  - 리포지토리 : aws-learner-docker-source-repo
+  - 참조 유형 : 브랜치
+  - 브랜치 : master
+  - 환경 이미지 : 관리형 이미지
+  - 운영체제 : Ubuntu
+  - 런타임 : Standard
+  - 이미지 : aws/codebuild/standard:7.0 (최신 고르면 됨)
+  - 이 런타임 버전에 항상 최신 이미지 사용
+  - 환경 유혐 : Linux
+    - 권한이있음 : 체크 (도케 이미지를 빌드하거나 빌드의 권한을 승격하려면 이 플래그를 활성화합니다.)
+  - 서비스 역할 : 새 서비스 역할
+  - 역할 이름 : codebuild-aws_learner_cb_proj-service-role
+  - 빌드 사양 : buildspec 파일 사용
+  - 로그 : CloudWatch 로그 체크
+  - 생성 버튼 클릭
+  - 빌드 시작 버튼 클릭
+  - 에러 발생시
+    - IAM
+      - 역할 : codebuild-aws_learner_cb_proj-service-role2
+      - 정책 연결 : registry 필터
+        - AmazonECSContainerRegistryPowerUser
+  - 빌드 시작 버튼 다시
