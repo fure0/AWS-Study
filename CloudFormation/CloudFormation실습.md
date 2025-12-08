@@ -1,0 +1,12 @@
+## CloudFormation
+- 스택 생성
+  - 템플릿 준비
+    - 준비된 템플릿
+  - 템플릿 지정
+    - 템플릿 파일 업로드
+      - CloudFormationTemplate.yml
+  - 스택 이름 : aws-learner-cf-stack
+  - 파라미터
+    - KeyName : awslearner
+  - 다음 다음 스택생성
+  - EC2 인스턴스 내용 확인 (yml내용이 반영되었는가)
