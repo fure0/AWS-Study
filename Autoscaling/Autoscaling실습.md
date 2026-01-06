@@ -1,0 +1,73 @@
+## 전제조건
+- EC2실습
+- ELB실습
+
+## 인스턴스 이미지 생성
+- 기존인스턴스가 만들어저 있을것 : LuckyInstance
+- EC2 > Instances > 해당 인스턴스 > Create image
+- image name : LuckyAMI
+- 생성
+
+## 템플릿 생성
+- EC2 > Launch templates > Create launch template
+- Launch template name : LuckyLT
+- Template version description : 1
+- Application and OS Images (Amazon Machine Image)
+  - My AMIs
+    - LuckyAMI 선택
+- Instance type : t3.micro
+- Secrity groups : LuckyWEBAPP-SG
+- Create Launch templates 버튼 클릭으로 생성
+
+## Auto Scaling groups 생성
+- EC2 > Auto Scaling groups > Create Auto Scaling group
+- Name : LuckyASG
+- Launch template
+  - LuckyLT 선택
+- Next
+- Network
+  - VPC : 디폴트 선택
+  - Availability Zones and subnets
+    - 로드 밸런서랑 맞춰야 한다.
+    - ap-northeast-2a (apne2-az1)
+    - ap-northeast-2b (apne2-az2) 
+- Next
+- Load balancing
+  - Attach to an exisint load balancer
+  - Choose from your load balancer target groups
+    - LuckyTG | HTTP
+- Next
+- Group sizz
+  - 몇개로 만들건지
+  - Desired capacity : 2
+  - Minimum capacity : 2
+  - Maximum capacity : 4
+- Scaling policies
+  - 오토스케일링 동작 조건
+  - Target tracking scaling policy 선택
+    - Metric type : Average CPU utilization
+    - Target value : 20 (테스트를위해. 보통은 50 ~ 60)
+- Add notifications 는 스킵
+- Add tags
+  - 오토스케일링이 만든 인스턴스 식별
+  - key : Name
+  - value : LuckyInstance
+- Next
+- Create Auto Scaling
+- Instance 메뉴가서 확인
+  - 최소 2개 만들라고 설정했으니 2개가 새로 생성되는것을 확인
+- EC2 > Target groups > LuckyTG
+  - 2개의 인스턴스 Health status 가 healthy인것을 확인
+  - Load Balancers 주소로 접속해서 잘 뜨는지 확인
+  - 1개의 인스턴스를 삭제해보기
+    - 바로 인스턴스에서 메뉴에서 terminate로 삭제하는게 아니라 Target group에서 Deregister로 삭제해야 사용중이던 유저에게 장애가 보이지 않은다.
+    - 그다음에 terminate로 삭제
+    - 후에 접속 과부하가 일어나면 자동으로 인스턴스를 늘려줌 (CPU를 인위적으로 늘려보기)
+- 테스트 후 지우기
+  - 먼저 Load Balancers 메뉴에서 삭제
+  - 그다음에 Target Group 메뉴에서 삭제
+  - Auto Scaling Groups 에서 삭제
+  - 테스트 이미지 AMIs도 삭제 > Deregister AMI
+  - Elastic Block Store > Snapshots 도 삭제
+  - Launch Templates 에서도 삭제
+  - Network & Security 에서 Securty Groups 도 삭제
