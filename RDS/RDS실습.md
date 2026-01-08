@@ -1,0 +1,51 @@
+## RDS 실습
+### Amazon RDS
+- Create database선택
+  - DB 선택
+    - MariaDB 선택
+  - Templates 선택
+    - 테스트에서는 Dev/Test 선택
+    - 본서버는 Production 선택
+  - Setting
+    - DB instance identifier
+      - 실제 DB이름이 아니라 인스턴스 구분 이름
+      - LuckyDB
+    - Master username
+      - 관리자 유저 이름 : admin
+      - 페스워드는 적당히 입력
+  - Instance configuration
+    - 얼마나 좋은 인스턴스를 사용할지 선택
+    - 보통은 좋은걸 선택하는게 맞는데 테스트에서는 저렴한것 선택해도 됨
+    - Bustable classes (includes t classes)
+  - Storage
+    - 너무 작은걸 선택하면 트래픽이 높으면 죽는다
+    - General Purpose SSD (gp2)
+  - Network
+    - 그냥 둬도 된다
+  - VPC security group (firewall)
+    - 없으면 Create new
+    - New VPC security group name : LuckyDB-SG
+    - Availability Zone : No preference
+    - Certificate authority - optional : rds-ca-2019 (default)
+    - Database port : 3306
+  - Monitoring
+    - Enable Enhanced monitoring
+      - 이걸 체크하면 1분마다 모니터링 되지만 비용이 조금 증가
+      - 체크 안하면 무료지만 5분마나 모니터링
+      - 체크를 권장하지만 테스트에서는 빼도 된다.
+  - 생성 버튼 클릭
+  - 성능을 높히기 위해 캐시를 사용할 거냐고 묻는 창이 나옴
+
+- 생성 후
+  - 개발 프레임워크에서는 Endpoit 주소로 접속가능
+  - .env파일등에서 ID PW입력
+  
+- RDS는 기본적으로 매일 스냅샷을 생성함
+  - 스냅샷은 백업을 위한 기능
+  - 수동으로도 스냅샷 가능
+
+- 주의
+  - 데이터베이스 인스턴스는 자동 오토스케링일이 안되고 인스턴스가 하나다
+  - 민감하게 모니터링을 하고, 트래픽이 많아지면 직접 좋은 인스턴스로 업그레이드 해야 한다.
+  - 수정에서 인스턴스 타입을 변경하면 잠깐 몇분 끊기지만 반영된다.
+  - 전문용어로 스케일업
