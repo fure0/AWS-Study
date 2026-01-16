@@ -1,0 +1,53 @@
+## Instance Image만들기
+- EC2 > Instance > Actions > Image and Templates > Create Image
+  - Image name : newLuckyWEBAMI
+  - Create image 버튼 클릭으로 저장
+  - images > AMIs 에서 만들어 지는것 확인
+
+## DB 스냅샷 만들기
+- Amazon RDS > Databases > Actions > Take snapshot
+  - DB Instance : lickydb
+  - Snapshot Name : newLuckySnapshot
+  - Take snapshot 버튼 클릭으로 저장
+
+## 보안 그룹 만들기
+- EC2 > Security Groups > Create security group
+  - 첫번째
+    - security group name : newLuckyALB-internet-SG
+    - Description : ALB Allow HTTP, HTTPS
+    - VPC : LuckyVPC
+    - Inbound rules
+      - HTTP : TCP 80 AnywhereIPv4 (0.0.0.0/0)
+      - HTTPS : TCP 443 AnywhereIPv4 (0.0.0.0/0)
+    - Create security group 버튼으로 저장
+  - 두번째
+    - security group name : newLuckyWEB-SG
+    - Description : WEB Server Allow HTTP, HTTPS
+    - VPC : LuckyVPC
+    - Inbound rules
+      - HTTP : TCP 80 AnywhereIPv4 (0.0.0.0/0)
+      - HTTPS : TCP 443 AnywhereIPv4 (0.0.0.0/0)
+    - Create security group 버튼으로 저장
+  - 세번째
+    - security group name : newLuckyALB-internal-SG
+    - Description : ALB internal Allow HTTP, HTTPS
+    - VPC : LuckyVPC
+    - Inbound rules
+      - HTTP : TCP 80 AnywhereIPv4 (0.0.0.0/0)
+      - HTTPS : TCP 443 AnywhereIPv4 (0.0.0.0/0)
+    - Create security group 버튼으로 저장
+  - 네번째
+    - security group name : newLuckyAPP-SG
+    - Description : APP Server Allow HTTP, HTTPS
+    - VPC : LuckyVPC
+    - Inbound rules
+      - HTTP : TCP 80 AnywhereIPv4 (0.0.0.0/0)
+      - HTTPS : TCP 443 AnywhereIPv4 (0.0.0.0/0)
+    - Create security group 버튼으로 저장
+  - 다섯번째
+    - security group name : newLuckyDB-SG
+    - Description : DB Allow 3306
+    - VPC : LuckyVPC
+    - Inbound rules
+      - MYSQL/AUrora : TCP 3306 AnywhereIPv4 (0.0.0.0/0)
+    - Create security group 버튼으로 저장

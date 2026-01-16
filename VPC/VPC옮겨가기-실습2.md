@@ -1,0 +1,213 @@
+## 타겟 그룹 만들기1
+- EC2 > Target groups > Create target group
+  - Choose a target type
+    - Instances
+  - Target group name : newLuckyWEB-TG
+  - Protocol : HTTP
+  - Port : 80
+  - VPC : LuckyVPC
+  - Protocol version : HTTP1
+  - Next 버튼
+  - 바로 이어서 Create target group 버튼
+
+## 로드 발란서 만들기1
+- EC2 > Load balancers > Select load balancer type > Create Application Load Balancer
+  - Load balancer name : newLuckyALB-internet
+  - Scheme : Internet-facing
+  - IP Address type : IPv4
+  - Network mapping
+    - VPC : LuckyVPC
+    - Mappings
+      - ap-northease-2a (apne2-az1)
+      - Subnet : LuckyPub1
+      - ap-northease-2b (apne2-az2)
+      - Subnet : LuckyPub2
+  - Srcurity groups
+    - Default group 는 삭제
+    - newLuckyALB-internet-SG 선택
+  - Listeners and routing
+    - 첫번쨰
+      - HTTP 80
+      - Dafult action
+        - Forward to : newLuckyWEB-TG
+    - 두번째
+      - HTTPS 443
+      - Dafult action
+        - Forward to : newLuckyWEB-TG
+  - Secure listener settings
+    - Security policy : recommended
+    - Default SSL/TLS certificate
+      - From ACM
+      - luckyvanilla.com
+  - Create load balancer 버튼
+
+## 오토 스케일링 그룹 만들기1
+- EC2 > Launch templates > Create launch template
+  - Launch template name : newLuckyWEB-LT
+  - Template version description : 1
+  - Application and OS Images (Amazon Machine Image)
+    - My AMIs : Owned by me
+  - Instance type : t3.micro
+  - Network settings
+    - Firewall (scurity groups)
+      - select existing security group
+      - newLuckyWEB-SG
+  - Create launch template 버튼으로 생성
+- EC2 > Auto Scaling groups > Create Auto Scaling group
+  - Name : newLuckyWEB-ASG
+  - Launch template : newLuckyWEB-LT
+  - Next 버튼
+  - Network
+    - VPC : LuckyVPC
+    - Availability Zones and subnets
+      - LuckyPri1
+      - LuckyPri2
+  - Next 버튼
+  - Load balancing
+    - Attach to an existing load balancer
+    - Choose from your load balancer target groups
+      - newLuckyWEB-TG | HTTP
+  - Next 버튼
+  - Configure group size and scaling policies - optional
+    - Group size
+      - Desired capacity : 2
+      - Minimum capacity : 2
+      - Maximum capacity : 4
+  - Scalig polices - otional
+    - Target tracking scaling policy
+    - Scaling policy name : Target Tracking Policy
+    - Metric type : Average CPU utilication
+    - Target value : 50
+    - Instances need : 300
+  - Next 버튼
+  - Next 버튼
+  - Add tags - optional
+    - Key : Name
+    - Value : newLuckyWEB
+  - Next 버튼
+  - Create Auto Scaling group 버튼으로 생성
+
+## 타겟 그룹 만들기2
+- EC2 > Target groups > Create target group
+  - Choose a target type
+    - Instances
+  - Target group name : newLuckyAPP-TG
+  - Protocol : HTTP
+  - Port : 80
+  - VPC : LuckyVPC
+  - Protocol version : HTTP1
+  - Next 버튼
+  - 바로 이어서 Create target group 버튼
+
+## 로드 발란서 만들기2
+- EC2 > Load balancers > Select load balancer type > Create Application Load Balancer
+  - Load balancer name : newLuckyALB-internal
+  - Scheme : Internal
+  - IP Address type : IPv4
+  - Network mapping
+    - VPC : LuckyVPC
+    - Mappings
+      - ap-northease-2a (apne2-az1)
+      - Subnet : LuckyPri1
+      - ap-northease-2b (apne2-az2)
+      - Subnet : LuckyPri2
+  - Srcurity groups
+    - Default group 는 삭제
+    - newLuckyALB-internal-SG 선택
+  - Listeners and routing
+    - 첫번쨰
+      - HTTP 80
+      - Dafult action
+        - Forward to : newLuckyAPP-TG
+    - 두번째
+      - HTTPS 443
+      - Dafult action
+        - Forward to : newLuckyAPP-TG
+  - Create load balancer 버튼
+
+## 오토 스케일링 그룹 만들기2
+- EC2 > Launch templates > Create launch template
+  - Launch template name : newLuckyAPP-LT
+  - Template version description : 1
+  - Application and OS Images (Amazon Machine Image)
+    - QUick Start : Amazon Linux
+  - Instance type : t3.micro
+  - Network settings
+    - Firewall (scurity groups)
+      - select existing security group
+      - newLuckyAPP-SG
+  - Create launch template 버튼으로 생성
+- EC2 > Auto Scaling groups > Create Auto Scaling group
+  - Name : newLuckyWEB-ASG
+  - Launch template : newLuckyAPP-LT
+  - Next 버튼
+  - Network
+    - VPC : LuckyVPC
+    - Availability Zones and subnets
+      - LuckyPri1
+      - LuckyPri2
+  - Next 버튼
+  - Load balancing
+    - Attach to an existing load balancer
+    - Choose from your load balancer target groups
+      - newLuckyAPP-TG | HTTP
+  - Next 버튼
+  - Configure group size and scaling policies - optional
+    - Group size
+      - Desired capacity : 2
+      - Minimum capacity : 2
+      - Maximum capacity : 4
+  - Scalig polices - otional
+    - Target tracking scaling policy
+    - Scaling policy name : Target Tracking Policy
+    - Metric type : Average CPU utilication
+    - Target value : 50
+    - Instances need : 300
+  - Next 버튼
+  - Next 버튼
+  - Add tags - optional
+    - Key : Name
+    - Value : newLuckyAPP
+  - Next 버튼
+  - Create Auto Scaling group 버튼으로 생성
+
+## DB 스냅샷 옮기기
+- RDS > Subnet groups > Create DB subnet group
+  - Subnet group details
+    - Name : newLuckyDBSubnetgroup
+    - Description : newLuckyDBSubnetgroup
+    - VPC : LuckyVPC
+  - Add Subnet
+    - Availability Zones
+      - ap-northeast-2a
+      - ap-northeast-2b
+    - subnets
+      - 10.0.1.0/24
+      - 10.0.3.0/24
+- RDS > Snapshots
+  - 만들어둔 newluckysnapshot 체크 > Actions > Restore snapshot
+    - DB instance settings
+      - DB engine : MariaDB
+    - Settings
+      - DB instance identifer : newLuckyDB
+    - Instance configuration
+      - DB instance class
+        - Burstable classes
+        - db.t3.micro
+    - Connectivity
+      - VPC : LuckyVPC
+      - DB subnet group : newluckydbsubnetgroup
+    - Public access
+      - NO
+    - VPC security group (firewall)
+      - Choose existing
+      - newLuckyDB-SG
+    - Restore DB instance 버튼 으로 복구
+
+
+## 도메인 주소 로드 발란서로 적용
+- Route 53 > Hosted zones > luckyvanilla.com
+  - Type이 A 인것을 체크 > Edit record 버튼 선택
+  - default VPC 에서 만든 로드 발란서 주소를 지우고
+  - luckyVPC 에서 새로 만든 로드 발란서 주소를 선택
+  - Save 버튼 선택
