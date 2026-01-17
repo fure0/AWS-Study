@@ -1,0 +1,58 @@
+## Security Chain
+- EC2 > Security Groups > 대상선택 (newLuckyDB-SG) > Edit inbound rules
+  - Inbound ruls
+    - 기존것 지우고 다시해야 적용됨 (AWS 문제)
+    - Add rule 버튼
+      - Type : MYSQL/Aurora
+      - Protocol : TCP
+      - Port range : 3306
+      - Source : Custom : newLuckyAPP-SG
+      - Save rules
+
+- EC2 > Security Groups > 대상선택 (newLuckyAPP-SG) > Edit inbound rules
+  - Inbound ruls
+    - 기존것 지우고 다시해야 적용됨 (AWS 문제)
+    - Add rule 버튼
+      - Type : HTTP
+      - Protocol : TCP
+      - Port range : 80
+      - Source : Custom : newLuckyALB-internal-SG
+      - Save rules
+    - Add rule 버튼
+      - Type : HTTPS
+      - Protocol : TCP
+      - Port range : 443
+      - Source : Custom : newLuckyALB-internal-SG
+      - Save rules
+
+- EC2 > Security Groups > 대상선택 (newLuckyALB-internal-SG) > Edit inbound rules
+  - Inbound ruls
+    - 기존것 지우고 다시해야 적용됨 (AWS 문제)
+    - Add rule 버튼
+      - Type : HTTP
+      - Protocol : TCP
+      - Port range : 80
+      - Source : Custom : newLuckyWEB-SG
+      - Save rules
+    - Add rule 버튼
+      - Type : HTTPS
+      - Protocol : TCP
+      - Port range : 443
+      - Source : Custom : newLuckyWEB-SG
+      - Save rules
+
+- EC2 > Security Groups > 대상선택 (newLuckyWEB-SG) > Edit inbound rules
+  - Inbound ruls
+    - 기존것 지우고 다시해야 적용됨 (AWS 문제)
+    - Add rule 버튼
+      - Type : HTTP
+      - Protocol : TCP
+      - Port range : 80
+      - Source : Custom : newLuckyALB-internet-SG
+      - Save rules
+    - Add rule 버튼
+      - Type : HTTPS
+      - Protocol : TCP
+      - Port range : 443
+      - Source : Custom : newLuckyALB-internet-SG
+      - Save rules

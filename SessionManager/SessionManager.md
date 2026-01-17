@@ -1,3 +1,5 @@
+![VPC 아키텍처 다이어그램](첨부파일/image.png)
+
 ## 주요 INSTANCE들을 외부에서 접근은 못하게 해놔서 보안은 한층 강화 됐어요. 하지만 저도 접글을 못하네요. 관리 어떻게 하죠?
 - Bastion(수호자) Instance를 Public Subnet에 놔두고 SSH로 접근한 다음에 Bastion Instance로 다른 Instnace들을 관리하면 되지 않을까?
 - 좋은 생각 인거 같음. 하지만 이렇게 사용하는게 위험할 수 있음
