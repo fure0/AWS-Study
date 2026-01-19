@@ -1,0 +1,14 @@
+## 실습
+- VPC > Endpoint > Create endpoint
+  - Name tag : LuckyS3Endpoint
+  - Service category : AWS services
+  - Services : s3로 필터
+    - Type : Gateway 를 선택
+    - * Gateway : 네트워크 설정으로 트래픽을 내부에서 내부로 전달하는 서비스
+    - * Interface : 서브넷의 ENI라고 하는 랜카드를 만들어서 Private Link라는 전용선으로 통신
+  - VPC : LuckyVPC
+  - Route tables
+    - Name :
+      - LuckyPriRT1 체크
+      - LuckyPriRT2 체크
+  - Create endpoint 버튼
