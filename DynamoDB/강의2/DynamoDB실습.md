@@ -1,0 +1,13 @@
+## 실습
+- DynamoDB > Tables > Create table
+  - Table name : luckytable
+  - Partition key : id
+    - 겹치지 않는 값 (유니크)
+  - Sort key - optional : name
+    - 정렬 값
+  - Create table 버튼
+- DynamoDB > Tables > luckytable > Explore table items
+  - Create item
+    - id : hahaha
+    - name : luckyvanilla3
+    - Create item 버튼
