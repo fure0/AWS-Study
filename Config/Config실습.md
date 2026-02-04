@@ -1,0 +1,12 @@
+## Config 실습
+- AWS Config > Rules > Add rule 버튼
+  - Select rule type : Add AWS managed rule
+    - AWS Managed Rules : EBS 필터
+      - ec2-ebs-encryption-by-default 선택 (ebs 암호화 기본)
+    - 또는
+    - AWS Managed Rules : S3 필터
+      - s3-bucket-level-public-access-prohibited (버킷 퍼블릭 레벨 차단)
+  - Next 버튼
+  - Next 버튼
+  - Save 버튼
+- 만들어진 후 대상이 룰을 지키고 있는지 검사하기 때문에 적용까지 시간이 걸린다
